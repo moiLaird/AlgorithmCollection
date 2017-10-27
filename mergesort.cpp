@@ -3,15 +3,26 @@
 
 using namespace std;
 
+constexpr int THRESHOLD = 16;
+
 template <typename Iterator>
 inline void merge_sort(Iterator first, Iterator last) {
     auto len = last - first;
-    if (len > 1) {
-        Iterator middle = first + len / 2;
-        merge_sort(first, middle);
-        merge_sort(middle, last);
-        inplace_merge(first, middle, last);
+    // insertion sort on small array
+    if (len <= THRESHOLD) {
+        Iterator i, j;
+        for (i = first + 1; i != last; ++i) {
+            auto tmp = *i;
+            for (j = i; j != first && *(j - 1) > tmp; --j)
+                *j = *(j - 1);
+            *j = tmp;
+        }
+        return;
     }
+    Iterator middle = first + len / 2;
+    merge_sort(first, middle);
+    merge_sort(middle, last);
+    inplace_merge(first, middle, last);
 }
 
 int main() {
