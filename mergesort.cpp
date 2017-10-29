@@ -22,6 +22,9 @@ inline void merge_sort(Iterator first, Iterator last) {
     Iterator middle = first + len / 2;
     merge_sort(first, middle);
     merge_sort(middle, last);
+    // optimization for nearly sorted
+    if (*(middle - 1) <= *middle)
+        return;
     inplace_merge(first, middle, last);
 }
 
