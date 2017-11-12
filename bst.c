@@ -2,21 +2,19 @@
 #include <stdlib.h>
 
 #define ElemType int
-typedef struct Node {
+typedef struct BTNode {
     ElemType element;
-    struct Node *left, *right;
+    struct BTNode *left, *right;
 } Node, *Tree;
 
 Tree find(ElemType x, Tree T)
 {
-    if (T == NULL)
-        return NULL;
-    if (x == T->element)
-        return T;
-    else if (x < T->element)
-        return find(x, T->left);
-    else
-        return find(x, T->right);
+    while (T != NULL && x != T->element)
+        if (x < T->element)
+            T = T->left;
+        else
+            T = T->right;
+    return T;
 }
 
 Tree find_min(Tree T)
@@ -42,7 +40,6 @@ Tree insert(ElemType x, Tree T)
 
 Tree delete(ElemType x, Tree T)
 {
-    Tree tmp;
     if (T == NULL)
         return NULL;
     if (x < T->element)
@@ -50,15 +47,11 @@ Tree delete(ElemType x, Tree T)
     else if (x > T->element)
         T->right = delete(x, T->right);
     else if (T->left && T->right) {
-        tmp = find_min(T->right);
-        T->element = tmp->element;
+        T->element = find_min(T->right)->element;
         T->right = delete(T->element, T->right);
     } else {
-        tmp = T;
-        if (T->left == NULL)
-            T = T->right;
-        else if (T->right == NULL)
-            T = T->left;
+        Tree tmp = T;
+        T = (T->left != NULL) ? T->left : T->right;
         free(tmp);
     }
     return T;
@@ -78,7 +71,7 @@ int main()
     Tree T = NULL;
     int n = 16, r;
     unsigned long next = 1;
-    for (int i = 0; i < n; i++) {
+    while (n--) {
         next = next * 1103515245 + 12345;
         r = (unsigned) (next / 65536) % 32768;
         printf("%d\t", r);
