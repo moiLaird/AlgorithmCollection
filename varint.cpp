@@ -6,16 +6,16 @@ using namespace std;
 
 // ZigZag maps signed integers to unsigned, effectively used with varint encoding
 
-uint64_t ZigZagEncode64(int64_t n) {
+uint64_t encodeZigzag(int64_t n) {
     // right-shift must be arithmetic
     return (static_cast<uint64_t>(n) << 1) ^ static_cast<uint64_t>(n >> 63);
 }
 
-int64_t ZigZagDecode64(uint64_t n) {
+int64_t decodeZigzag(uint64_t n) {
     return static_cast<int64_t>((n >> 1) ^ (~(n & 1) + 1));
 }
 
-int VarintParse(const char *buf, uint64_t &val) {
+int parseVarint(const char *buf, uint64_t &val) {
     val = 0;
     for (int i = 0; i < 10; ++i) {
         uint8_t byte = buf[i];
@@ -43,7 +43,7 @@ size_t encodeVarint(uint64_t val, char *buf) {
 
 const char *decodeVarint(const char *ptr, uint64_t &val) {
     uint8_t byte;
-    unsigned pos = 0;
+    uint8_t pos = 0;
     val = 0;
     do {
         if (pos >= 70) return nullptr;
@@ -64,8 +64,8 @@ string str2bin(const string &str) {
 
 int main() {
     int64_t num = 123456789;
-    uint64_t zz = ZigZagEncode64(num);
-    cout << zz << " < ZigZag > " << ZigZagDecode64(zz) << endl;
+    uint64_t zz = encodeZigzag(num);
+    cout << zz << " < ZigZag > " << decodeZigzag(zz) << endl;
 
     char vi[10];
     size_t n = encodeVarint(zz, vi);
